@@ -65,7 +65,7 @@ public class OrderService {
     SalesOrder salesOrder = salesOrders.getFirst();
     orderDetailResponse = buildOrderDetailResponse(salesOrder, languageId);
 
-    CartDetailResponse cartDetailResponse = cartProxy.get(salesOrder.getCartId(), orderRequest.getUserId());
+    CartDetailResponse cartDetailResponse = cartProxy.get(salesOrder.getCartId(), orderRequest.getUserId(), getCartStatusIds());
     if (ObjectUtils.isNotEmpty(cartDetailResponse)) {
       orderDetailResponse = orderDetailResponse.toBuilder()
           .cartItemDetailResponses(cartDetailResponse.getCartItems()).build();
@@ -125,7 +125,7 @@ public class OrderService {
 
   public OrderDetailResponse post(OrderTransactionRequest orderRequest) throws Exception {
 
-    CartDetailResponse cartDetailResponse = cartProxy.get(orderRequest.getCartId(), orderRequest.getUserId());
+    CartDetailResponse cartDetailResponse = cartProxy.get(orderRequest.getCartId(), orderRequest.getUserId(), List.of(3L));
     if (ObjectUtils.isEmpty(cartDetailResponse)) {
       throw new Exception("Cart: " + orderRequest.getCartId() + " not found for user: " + orderRequest.getUserId());
     }
@@ -201,8 +201,11 @@ public class OrderService {
   }
 
   public void cleareExistingCart(CartRequest cartRequest) throws Exception {
-    if(ObjectUtils.isEmpty(cartProxy.put(cartRequest))){
+    if(ObjectUtils.isEmpty(cartProxy.put(cartRequest.toBuilder().cartStatusIds(getCartStatusIds()).build()))){
       throw new Exception("Not able to clear the Cart after creating Order");
     }
+  }
+  private List<Long> getCartStatusIds() {
+    return List.of(1L);
   }
 }

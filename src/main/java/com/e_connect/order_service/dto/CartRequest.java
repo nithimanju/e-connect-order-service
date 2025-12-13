@@ -1,6 +1,7 @@
 package com.e_connect.order_service.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -20,4 +21,5 @@ public class CartRequest implements Serializable {
   private Long cartId;
   private Long userId;
   private Boolean isGuest;
+  private List<Long> cartStatusIds;
 }
