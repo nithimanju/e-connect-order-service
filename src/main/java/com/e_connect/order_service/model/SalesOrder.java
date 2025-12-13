@@ -53,6 +53,8 @@ public class SalesOrder extends BaseRecord {
   private BigDecimal totalFreightAmount;
   @Column(name = "TOTAL_DISCOUNT_AMOUNT")
   private BigDecimal totalDiscountAmount;
+  @Column(name = "SUB_TOTAL")
+  private BigDecimal subTotal;
   @Column(name = "ACTIVE")
   private Boolean active;
 }
