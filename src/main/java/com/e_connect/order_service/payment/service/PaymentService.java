@@ -13,10 +13,10 @@ import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.stereotype.Service;
 
-import com.e_connect.order_service.Constants;
 import com.e_connect.order_service.model.PaymentDescritpion;
 import com.e_connect.order_service.payment.dto.PaymentType;
 import com.e_connect.order_service.payment.repository.PaymentTypeDescriptionRepository;
+import com.e_connect.order_service.utils.Constants;
 import com.e_connect.order_service.utils.PredicateUtilsService;
 
 import lombok.RequiredArgsConstructor;

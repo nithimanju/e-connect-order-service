@@ -11,10 +11,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.e_connect.order_service.Constants;
 import com.e_connect.order_service.model.StatusDescription;
 import com.e_connect.order_service.status.dto.Status;
 import com.e_connect.order_service.status.repository.StatusDescriptionRepository;
+import com.e_connect.order_service.utils.Constants;
 import com.e_connect.order_service.utils.PredicateUtilsService;
 
 import jakarta.persistence.criteria.Predicate;

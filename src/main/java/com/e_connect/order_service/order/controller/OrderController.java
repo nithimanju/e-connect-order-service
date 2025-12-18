@@ -74,7 +74,7 @@ public class OrderController {
     return new ResponseEntity<>(orderResponse, HttpStatus.OK);
   }
 
-  @GetMapping("/order-list")
+  @PostMapping("/order-list")
   @Secured(value = "ROLE_LOGGED_IN")
   public ResponseEntity<OrderReturnListResponse> getList(
       @RequestBody OrderFetchRequest orderFetchRequest,
