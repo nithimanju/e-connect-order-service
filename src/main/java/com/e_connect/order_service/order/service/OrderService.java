@@ -8,7 +8,10 @@ import jakarta.persistence.criteria.Predicate;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ import com.e_connect.order_service.payment.dto.PaymentType;
 import com.e_connect.order_service.payment.service.PaymentService;
 import com.e_connect.order_service.status.dto.Status;
 import com.e_connect.order_service.status.service.StatusService;
+import com.e_connect.order_service.utils.Constants;
 import com.e_connect.order_service.utils.PredicateUtilsService;
 
 import lombok.RequiredArgsConstructor;
@@ -79,21 +83,21 @@ public class OrderService {
     return (root, query, builder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
-      predicates = predicateUtilsService.andValidePredicate(predicates, root, "orderId", orderRequest.getOrderId());
+      predicates = predicateUtilsService.andValidePredicate(predicates, root, Constants.ORDER_ID, orderRequest.getOrderId());
 
-      predicates = predicateUtilsService.andValidePredicate(predicates, root, "orderNumber",
+      predicates = predicateUtilsService.andValidePredicate(predicates, root, Constants.ORDER_NUMBER,
           orderRequest.getOrderNumber());
 
-      predicates = predicateUtilsService.andValidePredicate(predicates, root, "statusId", orderRequest.getStatusId());
+      predicates = predicateUtilsService.andValidePredicate(predicates, root, Constants.STATUS_ID, orderRequest.getStatusId());
 
-      predicates = predicateUtilsService.andValidePredicate(predicates, root, "paymentTypeId",
+      predicates = predicateUtilsService.andValidePredicate(predicates, root, Constants.PAYMENT_TYPE_ID,
           orderRequest.getPaymentTypeId());
 
       if (ObjectUtils.isNotEmpty(orderRequest.getFromDate())) {
-        builder.greaterThan(root.get("orderDate"), orderRequest.getFromDate());
+        builder.greaterThan(root.get(Constants.ORDER_DATE), orderRequest.getFromDate());
       }
       if (ObjectUtils.isNotEmpty(orderRequest.getToDate())) {
-        builder.lessThan(root.get("orderDate"), orderRequest.getToDate());
+        builder.lessThan(root.get(Constants.ORDER_DATE), orderRequest.getToDate());
       }
 
       predicates.add(QueryByExamplePredicateBuilder.getPredicate(root, builder, salesOrderexample));
@@ -109,7 +113,8 @@ public class OrderService {
     Example<SalesOrder> salesOrderexample = Example
         .of(SalesOrder.builder().active(true).ownerId(orderRequest.getUserId()).build());
     Specification<SalesOrder> salesOrderSpecification = getOrderPredicate(orderRequest, salesOrderexample);
-    List<SalesOrder> salesOrders = salesOrderRepository.findAll(salesOrderSpecification);
+    Pageable page = PageRequest.of(orderRequest.getFrom(), orderRequest.getSize());
+    Page<SalesOrder> salesOrders = salesOrderRepository.findAll(salesOrderSpecification, page);
 
     if (ObjectUtils.isEmpty(salesOrders)) {
       return null;
@@ -117,7 +122,7 @@ public class OrderService {
 
     List<OrderListResponse> orderListResponses = salesOrders.stream()
         .map(order -> buildOrderListResponse(order, languageId)).toList();
-    orderReturnListResponse = OrderReturnListResponse.builder().count(orderListResponses.size())
+    orderReturnListResponse = OrderReturnListResponse.builder().count(Long.valueOf(salesOrders.getTotalElements()).intValue())
         .orderListResponses(orderListResponses).build();
 
     return orderReturnListResponse;
@@ -143,7 +148,7 @@ public class OrderService {
 
   private SalesOrder buildSalesOrder(CartDetailResponse cartDetailResponse, OrderTransactionRequest orderRequest) {
     SalesOrder salesOrder = SalesOrder.builder()
-        .orderNumber("")
+        .orderNumber("000".concat(String.valueOf(orderRequest.getUserId()).concat(String.valueOf(cartDetailResponse.getCartId()))))
         .cartId(cartDetailResponse.getCartId())
         .statusId(1L)
         .dealerId(orderRequest.getDealerId())

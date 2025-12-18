@@ -12,7 +12,7 @@ import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializ
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 import org.springframework.stereotype.Component;
 
-import com.e_connect.order_service.Constants;
+import com.e_connect.order_service.utils.Constants;
 
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
